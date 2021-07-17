@@ -6,6 +6,7 @@ import auth from './modules/auth.module';
 import exceptions from './modules/exceptions.module';
 import users from './modules/users.module';
 import symbols from './modules/symbols.module';
+import histoties from './modules/histoties.module';
 import db from './modules/db.module';
 
 Vue.use(Vuex);
@@ -17,6 +18,7 @@ export default new Vuex.Store({
       exceptions,
       users,
       symbols,
+      histoties,
       db
    }
 });

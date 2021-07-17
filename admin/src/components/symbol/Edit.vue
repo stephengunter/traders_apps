@@ -19,7 +19,6 @@
 							/>
 						</validation-provider>
 					</v-col>
-					
 					<v-col cols="12">
 						<validation-provider v-slot="{ errors }" name="title" rules="required">
 							<v-text-field label="Title" v-model="model.title" required
@@ -38,9 +37,6 @@
 						/>
 					</v-col>
 				</v-row>
-
-				<core-error-list />
-
 				<v-row>
 					<v-col cols="12">
 						<v-radio-group v-model="params.active" row @change="onActiveChanged">
@@ -50,6 +46,13 @@
 						</v-radio-group>
 					</v-col>
 				</v-row>
+
+				<trade-session-edit ref="sessionsEditor"
+            :symbol_id="model.id" :init_models="model.tradeSessions"
+            @submit="onSessionSubmit"
+            />
+
+				<core-error-list />
 			</v-container>
 		</v-card-text>
 		<v-card-actions>
@@ -87,10 +90,6 @@ export default {
          type: Object,
          default: null
 		},
-		version: {
-         type: Number,
-         default: 0
-		},
 		type_options: {
          type: Array,
          default: () => []
@@ -122,15 +121,17 @@ export default {
 			if(this.model.id) return `Edit ${text}`;
 			return `Create ${text}`;	
 		},
+		sessionsEditor() {
+			if(this.$refs.sessionsEditor) return this.$refs.sessionsEditor;
+			else if (this.references.sessionsEditor) return this.references.sessionsEditor;
+			return null;
+		},
 		validator() {
 			if(this.$refs.validator) return this.$refs.validator;
 			else if (this.references.validator) return this.references.validator;
 			return null;
 		}
 	},
-	watch: {
-      version: 'onVersionChanged'
-   },
 	beforeMount() {
 		this.params.active = this.model.active ? 1 : 0;
 		
@@ -147,21 +148,47 @@ export default {
 			this.validator.reset();
          this.$emit('cancel');
 		},
+		checkSessions(sessions) {
+			if(!sessions.length) return '必須要有TradeSessions';
+			let msg = '';
+			let defaultCount = 0;
+			for(let i = 0; i < sessions.length; i++) {
+            if(sessions[i].default) defaultCount += 1;
+			}
+			if(defaultCount === 0) return '必須要有default的TradeSession';
+			else if(defaultCount > 1) msg = '只能有一個default的TradeSession';
+
+			return msg;
+		},
+		onSessionSubmit(sessions) {
+			let msg = this.checkSessions(sessions);
+			console.log(msg);
+			if(msg) {
+				this.$store.commit(SET_ERROR, { 'tradeSessions' : [msg] });
+				return;
+			}
+			
+			this.model.tradeSessions = sessions.slice(0);
+			this.submit();
+		},
 		onSubmit() {
+			this.$store.commit(CLEAR_ERROR);
          this.validator.validate().then(valid => {
-				if(valid) {
-					let model = this.model;
-					this.$store.commit(CLEAR_ERROR);
-					this.$store.dispatch(model.id ? UPDATE_SYMBOL : STORE_SYMBOL, model)
-					.then(symbol => {
-						this.$emit('saved', symbol);	
-					})
-					.catch(error => {
-						if(!error)  Bus.$emit(ERRORS);
-						else this.$store.commit(SET_ERROR, error);
-					})
-				}
+				if(!valid) return;
+				this.sessionsEditor.submit();
          });         
+		},
+		submit() {
+			let model = { ...this.model };
+				
+			this.$store.dispatch(model.id ? UPDATE_SYMBOL : STORE_SYMBOL, model)
+			.then(symbol => {
+				this.$emit('saved', symbol);	
+			})
+			.catch(error => {
+				if(!error)  Bus.$emit(ERRORS);
+				else this.$store.commit(SET_ERROR, error);
+			})
 		},
 		onRemove() {
 			Bus.$emit(SHOW_CONFIRM, {

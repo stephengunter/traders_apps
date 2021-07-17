@@ -1,6 +1,5 @@
 <template>
    <v-data-table :headers="headers" :items="list" hide-default-footer :server-items-length="list ? list.length : 0">
-     
       <template v-slot:[`item.action`]="{ item }">
          <v-tooltip v-if="item.active" top>
 				<template v-slot:activator="{ on, attrs }">
@@ -20,18 +19,15 @@
          <v-chip small v-if="item.active" color="success" text-color="white">{{ item.statusText }}</v-chip>
          <v-chip small v-else>{{ item.statusText }}</v-chip>
       </template>
-      <template v-slot:[`item.code`]="{ item }">
-         <p v-html="item.code"></p>
-      </template>
-      <template v-slot:[`item.title`]="{ item }">
-         <p v-text="item.title"></p>
-      </template>
       <template v-slot:[`item.type`]="{ item }">
          <v-chip small
          :color="typeColor(item.type)" text-color="white"
          >
          {{ item.type }}
          </v-chip>
+      </template>
+      <template v-slot:[`item.tradeSessions`]="{ item }" >
+          <trade-session-list :sessions="item.tradeSessions" />
       </template>
    </v-data-table>
 </template>
@@ -59,6 +55,8 @@ export default {
             text: 'Title', value: 'title', sortable: false
          },{
             text: 'Type', value: 'type', sortable: false
+         },{
+            text: 'TradeSessions', value: 'tradeSessions', sortable: false
          }]
 		}
    },

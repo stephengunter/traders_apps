@@ -1,6 +1,6 @@
 <template>
    <v-btn :class="class_name" :color="color"
-    :loading="loading" :disabled="launching || loading"
+    :loading="loading" :disabled="isDisabled"
    @click="launch" 
    >
       <slot>
@@ -37,12 +37,16 @@ export default {
       },
       allow_types: {
          type: Array,
-         default: null
+         default: () => []
       },
       is_media: {
          type: Boolean,
          default: true
       },
+      disabled: {
+         type: Boolean,
+         default: false
+      }
    },
    data () {
 		return {
@@ -58,6 +62,10 @@ export default {
 		}
    },
    computed: {
+      isDisabled () {
+         if(this.disabled) return true;
+         return this.launching || this.loading
+      },
       inputUpload() {
 			if(this.$refs.inputUpload) return this.$refs.inputUpload;
 			else if (this.references.inputUpload) return this.references.inputUpload;

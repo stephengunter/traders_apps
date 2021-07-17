@@ -31,6 +31,11 @@ export const UPDATE_SYMBOL = 'updateSymbol';
 export const OFF_SYMBOL = 'offSymbol';
 export const REMOVE_SYMBOL = 'removeSymbol';
 
+//Histoties
+export const FETCH_HISTORIES = 'fetchHistoties';
+export const HISTORY_DETAILS = 'historyDetails';
+export const IMPORT_HISTORY_QUOTES = 'importHistoryQuotes';
+
 //DB
 export const GET_DB_NAME = 'getDbName';
 export const DB_IMPORT = 'dbImport';

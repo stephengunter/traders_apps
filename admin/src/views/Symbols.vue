@@ -26,7 +26,7 @@
 
 <script>
 import { mapState, mapGetters } from 'vuex';
-import { RESPONSIVE, CONTENT_MAX_WIDTH } from '@/store/getters.type';
+import { CONTENT_MAX_WIDTH } from '@/store/getters.type';
 import { CLEAR_ERROR, SET_ERROR } from '@/store/mutations.type';
 import { FETCH_SYMBOLS, CREATE_SYMBOL, EDIT_SYMBOL, OFF_SYMBOL,
 SUCCESS } from '@/store/actions.type';
@@ -36,7 +36,7 @@ import { DIALOG_MAX_WIDTH } from '@/config';
 
 export default {
 	name: 'SymbolsView',
-   data () {
+   data() {
 		return {
 			params: {
 				active: 1
@@ -63,7 +63,7 @@ export default {
 		}
 	},
    computed: {
-		...mapGetters([RESPONSIVE, CONTENT_MAX_WIDTH]),
+		...mapGetters([CONTENT_MAX_WIDTH]),
 		...mapState({
 			list: state => state.symbols.list
 		}),
